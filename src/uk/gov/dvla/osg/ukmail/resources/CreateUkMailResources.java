@@ -281,8 +281,6 @@ public class CreateUkMailResources {
 		
 		PrintWriter pw1 = fh.createOutputFileWriter(soapFilePath);
 		PrintWriter pw2 = fh.createOutputFileWriter(soapFileArchivePath);
-		//PrintWriter pw3 = fh.createOutputFileWriter(barcodeFilePath);
-		//PrintWriter pw4 = fh.createOutputFileWriter(barcodeArchiveFilePath);
 		
 		for(SoapFileEntry sfee : sf){
 			fh.appendToFile(pw1, sfee.print());
@@ -354,7 +352,6 @@ public class CreateUkMailResources {
 	}
 
 	private static void createKickfile(ArrayList<UkMailManifest> ukmm, ArrayList<Customer> customers){
-		//ArrayList<Kick> kickList = new ArrayList<Kick>();
 		Integer customerIndex = 0;
 		String prevJid="";
 
@@ -362,13 +359,8 @@ public class CreateUkMailResources {
 
 			if(((ukmm.get(i).getJid().equals(prevJid)) || (ukmm.size() == 1)) && !(ukmm.get(i).getFirstPieceId()==1)){
 				customerIndex = getCustomerIndexFromPidFaster(customers, ukmm.get(i).getJid(), ukmm.get(i).getFirstPieceId());
-				//System.out.println("INDEX = " + customerIndex);
 				for(int j = customerIndex; j >= 0 ; j++){
 					if(customers.get(j).getEog().equals("X")){
-						//Kick kick = new Kick();
-						//kick.setJid(customers.get(j).getJid());
-						//kick.setPid(customers.get(j).getSequence());
-						//kickList.add(kick);
 						customers.get(j).setEot("X");
 						break;
 					}
@@ -377,11 +369,6 @@ public class CreateUkMailResources {
 			prevJid=ukmm.get(i).getJid();
 		}
 		
-		/*PrintWriter pw1 = fh.createOutputFileWriter("C:\\Users\\dendlel\\Desktop\\RPD\\ukmResources\\KICK.DAT");
-		for(Kick kick : kickList){
-			fh.appendToFile(pw1, kick.print());
-		}
-		fh.closeFile(pw1);*/
 
 	}
 
@@ -402,7 +389,7 @@ public class CreateUkMailResources {
 			Customer customer = ukMailCustomer.get(i);
 			currentBoxSize = customer.getSize();
 			incrementTrayWeight(customer.getWeight());
-			//LOGGER.info("Tray weight is now {}",getTrayWeight());
+			LOGGER.debug("Tray weight is now {}",getTrayWeight());
 			if(i.equals(ukMailCustomer.size()-1)){
 				//If last customer then create manifest object
 				itemCount ++;
@@ -421,6 +408,7 @@ public class CreateUkMailResources {
 				}
 				ukmList.add(getItemManifest(customer,itemCount,startPID, endPID));
 				if(itemCount < minimumTrayVolume){
+					LOGGER.debug("To few items in box {}, minimum set to {}",itemCount,minimumTrayVolume);
 					adjustTrayVolume(ukMailCustomer, ukmList);
 				}
 			}else{
@@ -448,7 +436,7 @@ public class CreateUkMailResources {
 						
 						ukmList.add(getItemManifest(customer,itemCount,startPID, endPID));
 						if(itemCount < minimumTrayVolume){
-							
+							LOGGER.debug("To few items in box {}, minimum set to {}",itemCount,minimumTrayVolume);
 							adjustTrayVolume(ukMailCustomer, ukmList);
 						}
 						startPID = nextCustomer.getSequence();
@@ -480,9 +468,15 @@ public class CreateUkMailResources {
 	 * @param ukmList
 	 */
 	private static void adjustTrayVolume(ArrayList<Customer> customers, ArrayList<UkMailManifest> ukmList) {
+		UkMailManifest lastEntry = null, penultimateEntry = null;
 		
-		UkMailManifest lastEntry = ukmList.get(ukmList.size()-1);
-		UkMailManifest penultimateEntry = ukmList.get(ukmList.size()-2);
+		try{
+			lastEntry = ukmList.get(ukmList.size()-1);
+			penultimateEntry = ukmList.get(ukmList.size()-2);
+		}catch(IndexOutOfBoundsException e){
+			LOGGER.fatal("Error when creating manifest, check configuration for box minimum");
+			System.exit(1);
+		}
 		Integer numberOfItemsToMove = penultimateEntry.getTrayVol() / 2;
 		Integer[] itemWeight = {penultimateEntry.getTrayWeight() / penultimateEntry.getTrayVol(),
 				lastEntry.getTrayWeight() / lastEntry.getTrayVol()};
