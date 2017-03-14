@@ -352,6 +352,7 @@ public class CreateUkMailResources {
 	}
 
 	private static void createKickfile(ArrayList<UkMailManifest> ukmm, ArrayList<Customer> customers){
+		LOGGER.info("Running createKickfile, list size={}, customer size={}",ukmm.size(),customers.size());
 		Integer customerIndex = 0;
 		String prevJid="";
 
@@ -359,6 +360,7 @@ public class CreateUkMailResources {
 
 			if(((ukmm.get(i).getJid().equals(prevJid)) || (ukmm.size() == 1)) && !(ukmm.get(i).getFirstPieceId()==1)){
 				customerIndex = getCustomerIndexFromPidFaster(customers, ukmm.get(i).getJid(), ukmm.get(i).getFirstPieceId());
+				LOGGER.debug("customer idx={} jid={} pid={}",customerIndex,ukmm.get(i).getJid(),ukmm.get(i).getFirstPieceId());
 				for(int j = customerIndex; j >= 0 ; j++){
 					if(customers.get(j).getEog().equals("X")){
 						customers.get(j).setEot("X");
@@ -368,8 +370,6 @@ public class CreateUkMailResources {
 			}
 			prevJid=ukmm.get(i).getJid();
 		}
-		
-
 	}
 
 	/**
@@ -387,9 +387,9 @@ public class CreateUkMailResources {
 		for(Integer i = 0; i < ukMailCustomer.size();i++){
 			j = i + 1;
 			Customer customer = ukMailCustomer.get(i);
-			currentTraySize = customer.getSize();
+			currentTraySize = currentTraySize + customer.getSize();
 			incrementTrayWeight(customer.getWeight());
-			LOGGER.debug("Tray weight is now {}",getTrayWeight());
+			//LOGGER.debug("Tray weight is now {}",getTrayWeight());
 			if(i.equals(ukMailCustomer.size()-1)){
 				//If last customer then create manifest object
 				itemCount ++;
@@ -426,7 +426,7 @@ public class CreateUkMailResources {
 								Customer mulitCustomer = ukMailCustomer.get(k);
 								if("X".equalsIgnoreCase(mulitCustomer.getEog())){
 									endPID = ukMailCustomer.get(k + 1).getSequence();
-									LOGGER.debug("Setting Manifest END PID to:{}",ukMailCustomer.get(k + 1).getSequence());
+									//LOGGER.debug("Setting Manifest END PID to:{}",ukMailCustomer.get(k + 1).getSequence());
 									break;
 								}
 							}
@@ -436,7 +436,7 @@ public class CreateUkMailResources {
 						
 						ukmList.add(getItemManifest(customer,itemCount,startPID, endPID));
 						if(itemCount < minimumTrayVolume){
-							LOGGER.debug("To few items in tray {}, minimum set to {}",itemCount,minimumTrayVolume);
+							LOGGER.debug("Too few items in tray {}, minimum set to {}",itemCount,minimumTrayVolume);
 							adjustTrayVolume(ukMailCustomer, ukmList);
 						}
 						startPID = nextCustomer.getSequence();
