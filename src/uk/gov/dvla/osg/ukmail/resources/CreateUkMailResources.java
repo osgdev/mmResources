@@ -381,13 +381,13 @@ public class CreateUkMailResources {
 		Integer startPID = 1;
 		Integer endPID = 1;
 		Customer nextCustomer = null;
-		float currentBoxSize = 0;
-		float currentBoxWeight =0;
+		float currentTraySize = 0;
+		float currentTrayWeight =0;
 		
 		for(Integer i = 0; i < ukMailCustomer.size();i++){
 			j = i + 1;
 			Customer customer = ukMailCustomer.get(i);
-			currentBoxSize = customer.getSize();
+			currentTraySize = customer.getSize();
 			incrementTrayWeight(customer.getWeight());
 			LOGGER.debug("Tray weight is now {}",getTrayWeight());
 			if(i.equals(ukMailCustomer.size()-1)){
@@ -408,7 +408,7 @@ public class CreateUkMailResources {
 				}
 				ukmList.add(getItemManifest(customer,itemCount,startPID, endPID));
 				if(itemCount < minimumTrayVolume){
-					LOGGER.debug("To few items in box {}, minimum set to {}",itemCount,minimumTrayVolume);
+					LOGGER.debug("Too few items in tray {}, minimum set to {}",itemCount,minimumTrayVolume);
 					adjustTrayVolume(ukMailCustomer, ukmList);
 				}
 			}else{
@@ -418,7 +418,7 @@ public class CreateUkMailResources {
 					itemCount ++;
 					if(!(customer.getJid().equals(nextCustomer.getJid())) || 
 						!(customer.getMsc().equals(nextCustomer.getMsc())) ||
-						((currentBoxSize + nextCustomer.getSize()) > prodConfig.getTraySize()  ) ){
+						((currentTraySize + nextCustomer.getSize()) > prodConfig.getTraySize()  ) ){
 
 						if("MULTI".equalsIgnoreCase(customer.getBatchType())){
 							int l=i-1;
@@ -436,12 +436,12 @@ public class CreateUkMailResources {
 						
 						ukmList.add(getItemManifest(customer,itemCount,startPID, endPID));
 						if(itemCount < minimumTrayVolume){
-							LOGGER.debug("To few items in box {}, minimum set to {}",itemCount,minimumTrayVolume);
+							LOGGER.debug("To few items in tray {}, minimum set to {}",itemCount,minimumTrayVolume);
 							adjustTrayVolume(ukMailCustomer, ukmList);
 						}
 						startPID = nextCustomer.getSequence();
 						itemCount=0;
-						currentBoxSize=0;
+						currentTraySize=0;
 						resetWeight();
 					}
 				}
@@ -474,7 +474,7 @@ public class CreateUkMailResources {
 			lastEntry = ukmList.get(ukmList.size()-1);
 			penultimateEntry = ukmList.get(ukmList.size()-2);
 		}catch(IndexOutOfBoundsException e){
-			LOGGER.fatal("Error when creating manifest, check configuration for box minimum");
+			LOGGER.fatal("Error when creating manifest, check configuration for tray minimum");
 			System.exit(1);
 		}
 		Integer numberOfItemsToMove = penultimateEntry.getTrayVol() / 2;
