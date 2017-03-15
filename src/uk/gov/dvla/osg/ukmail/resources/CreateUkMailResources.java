@@ -363,7 +363,7 @@ public class CreateUkMailResources {
 				LOGGER.debug("customer idx={} jid={} pid={}",customerIndex,ukmm.get(i).getJid(),ukmm.get(i).getFirstPieceId());
 				for(int j = customerIndex; j >= 0 ; j++){
 					if(customers.get(j).getEog().equals("X")){
-						customers.get(j).setEot("X");
+						customers.get(j).setSot("X");
 						break;
 					}
 				}
