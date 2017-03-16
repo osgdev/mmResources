@@ -292,7 +292,14 @@ public class CreateUkMailResources {
 	}
 
 	private static String getMmBarcodeContent(String itemId, Customer cus) {
-		String str = String.format("%-4.4s%-1.1s%-1.1s%-1.1s%-7.7s%-8.8s%-9.9s%-1.1s%-7.7s%-6.6s%-5.5s%-20.20s",
+		String customerContent = "";
+		if( cus.getMmCustomerContent() == null || cus.getMmCustomerContent().trim().isEmpty() ){
+			customerContent = String.format("%-5.5s", runNo) + cus.getJid() + cus.getSequence();
+		} else {
+			customerContent = cus.getMmCustomerContent();
+		}
+		
+		String str = String.format("%-4.4s%-1.1s%-1.1s%-1.1s%-7.7s%-8.8s%-9.9s%-1.1s%-7.7s%-6.6s%-25.25s",
 				postConfig.getMmUpuCountryId(),
 				postConfig.getMmInfoType(),
 				postConfig.getMmVersionId(),
@@ -303,8 +310,7 @@ public class CreateUkMailResources {
 				postConfig.getMmReturnMailFlag(),
 				postConfig.getMmReturnMailPc(),
 				postConfig.getMmReserved(),
-				runNo,
-				cus.getJid() + cus.getSequence());
+				customerContent);
 		return str;
 	}
 
