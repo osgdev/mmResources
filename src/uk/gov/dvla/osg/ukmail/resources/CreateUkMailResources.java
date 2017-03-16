@@ -292,7 +292,7 @@ public class CreateUkMailResources {
 	}
 
 	private static String getMmBarcodeContent(String itemId, Customer cus) {
-		String str = String.format("%-4.4s%-1.1s%-1.1s%-1.1s%-7.7s%-8.8s%-9.9s%-1.1s%-7.7s%-6.6s%-6.6s%-20.20s",
+		String str = String.format("%-4.4s%-1.1s%-1.1s%-1.1s%-7.7s%-8.8s%-9.9s%-1.1s%-7.7s%-6.6s%-5.5s%-20.20s",
 				postConfig.getMmUpuCountryId(),
 				postConfig.getMmInfoType(),
 				postConfig.getMmVersionId(),
