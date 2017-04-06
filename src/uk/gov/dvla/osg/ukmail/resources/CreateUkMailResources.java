@@ -369,6 +369,7 @@ public class CreateUkMailResources {
 				LOGGER.debug("customer idx={} jid={} pid={}",customerIndex,ukmm.get(i).getJid(),ukmm.get(i).getFirstPieceId());
 				for(int j = customerIndex; j >= 0 ; j++){
 					if(customers.get(j).getEog().equals("X")){
+						LOGGER.debug("Customer with doc ref '{}' and idx '{}' has EOG of '{}'", customers.get(j).getDocRef(), j, customers.get(j).getEog());
 						customers.get(j).setSot("X");
 						break;
 					}
@@ -511,15 +512,17 @@ public class CreateUkMailResources {
 	}
 	
 	private static Integer getCustomerIndexFromPidFaster(ArrayList<Customer> customers, String jid, Integer pid){
+		int result = 0;
 		if(ukmMap==null){
 			ukmMap = new HashMap<String, Integer>();
 			for(Integer i = 0; i < customers.size();i++){
-				ukmMap.put(customers.get(i).getJid() + customers.get(i).getSequence() , i);
+				ukmMap.put(customers.get(i).getJid() + "~" + customers.get(i).getSequence() , i);
 			}
 		}
-		String key = jid + pid;
-		
-		return ukmMap.get(key);
+		String key = jid + "~"+ pid;
+		result = ukmMap.get(key);
+		LOGGER.debug("getCustomerIndexFromPidFaster(ArrayOf {} customers,{},{}) returned '{}'", customers.size(), jid, pid, result);
+		return result;
 	}
 
 	/**
