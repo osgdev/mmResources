@@ -187,7 +187,9 @@ public class CreateUkMailResources {
 		for(Customer customer : customers){
 			//if(mailMarkOtts.contains(customer.getOtt())){
 				pid = customer.getSequence();
-				jid = customer.getJid();
+				// MP
+				//jid = customer.getJid();
+				jid = customer.getTenDigitJidStr();
 				for(Integer i = 0; i < ukmm.size(); i++){
 					if(i == ukmm.size()-1){
 						j=i;
@@ -212,7 +214,9 @@ public class CreateUkMailResources {
 									}
 									itemId=getItemId();
 									
-									bc.setJid(customers.get(z).getJid());
+									// MP
+									//bc.setJid(customers.get(z).getJid);
+									bc.setJid(customers.get(z).getTenDigitJidStr());
 									bc.setPid(customers.get(z).getSequence());
 									bc.setItemNo(itemId);
 									//Setting MM barcode content
@@ -220,7 +224,9 @@ public class CreateUkMailResources {
 									
 									
 									sfe.setRunNo(runNo);
-									sfe.setJid(customers.get(z).getJid());
+									// MP
+									//sfe.setJid(customers.get(z).getJid());
+									sfe.setJid(customers.get(z).getTenDigitJidStr());
 									sfe.setPid(customers.get(z).getSequence());
 									sfe.setClasz(postConfig.getMmClass());
 									sfe.setDps(customers.get(z).getDps());
@@ -234,7 +240,9 @@ public class CreateUkMailResources {
 									sfe.setWeight((int) customers.get(z).getWeight());
 									sfe.setSpare8(ukmm.get(i).getAltRef());
 									sfe.setAppName(postConfig.getMmAppname());
-									sfe.setBatchRef(ukmm.get(i).getMailingId() + "_" + customers.get(z).getJid().substring(0,7) + "000_" + manifestTimestamp);
+									// MP
+									//sfe.setBatchRef(ukmm.get(i).getMailingId() + "_" + customers.get(z).getJid().substring(0,7) + "000_" + manifestTimestamp);
+									sfe.setBatchRef(ukmm.get(i).getMailingId() + "_" + customers.get(z).getTenDigitJidStr().substring(0,7) + "000_" + manifestTimestamp);
 									sfe.setScid(postConfig.getMmScid());
 									
 									sf.add(sfe);
@@ -267,7 +275,9 @@ public class CreateUkMailResources {
 							sfe.setWeight((int) customer.getWeight());
 							sfe.setSpare8(ukmm.get(i).getAltRef());
 							sfe.setAppName(postConfig.getMmAppname());
-							sfe.setBatchRef(ukmm.get(i).getMailingId() + "_" + customer.getJid().substring(0,7) + "000_" + manifestTimestamp);
+							// MP
+							//sfe.setBatchRef(ukmm.get(i).getMailingId() + "_" + customer.getJid().substring(0,7) + "000_" + manifestTimestamp);
+							sfe.setBatchRef(ukmm.get(i).getMailingId() + "_" + customer.getTenDigitJidStr().substring(0,7) + "000_" + manifestTimestamp);
 							sfe.setScid(postConfig.getMmScid());
 							
 							sf.add(sfe);
@@ -294,7 +304,8 @@ public class CreateUkMailResources {
 	private static String getMmBarcodeContent(String itemId, Customer cus) {
 		String customerContent = "";
 		if( cus.getMmCustomerContent() == null || cus.getMmCustomerContent().trim().isEmpty() ){
-			customerContent = String.format("%-5.5s", runNo) + cus.getJid() + cus.getSequence();
+//			customerContent = String.format("%-5.5s", runNo) + cus.getJid() + cus.getSequence();
+			customerContent = String.format("%-5.5s", runNo) + cus.getTenDigitJidStr() + cus.getSequence();
 		} else {
 			customerContent = cus.getMmCustomerContent();
 		}
@@ -363,8 +374,7 @@ public class CreateUkMailResources {
 		String prevJid="";
 
 		for(int i = 0; i < ukmm.size(); i++){
-
-			if(((ukmm.get(i).getJid().equals(prevJid)) || (ukmm.size() == 1)) && !(ukmm.get(i).getFirstPieceId()==1)){
+			if(((ukmm.get(i).getJid().equals(prevJid)) || (ukmm.size() == 1)) && !(ukmm.get(i).getFirstPieceId()==1)){		
 				customerIndex = getCustomerIndexFromPidFaster(customers, ukmm.get(i).getJid(), ukmm.get(i).getFirstPieceId());
 				LOGGER.debug("customer idx={} jid={} pid={}",customerIndex,ukmm.get(i).getJid(),ukmm.get(i).getFirstPieceId());
 				for(int j = customerIndex; j >= 0 ; j++){
@@ -423,7 +433,9 @@ public class CreateUkMailResources {
 				nextCustomer = ukMailCustomer.get(j);
 				if(ukMailCustomer.get(i).getEog().equals("X")){
 					itemCount ++;
-					if(!(customer.getJid().equals(nextCustomer.getJid())) || 
+					//MP
+					//if(!(customer.getJid().equals(nextCustomer.getJid())) || 
+					if(!(customer.getTenDigitJidStr().equals(nextCustomer.getTenDigitJidStr())) || 
 						!(customer.getMsc().equals(nextCustomer.getMsc())) ||
 						((currentTraySize + nextCustomer.getSize()) > prodConfig.getTraySize()  ) ){
 
@@ -516,7 +528,9 @@ public class CreateUkMailResources {
 		if(ukmMap==null){
 			ukmMap = new HashMap<String, Integer>();
 			for(Integer i = 0; i < customers.size();i++){
-				ukmMap.put(customers.get(i).getJid() + "~" + customers.get(i).getSequence() , i);
+				// MP
+				//ukmMap.put(customers.get(i).getJid() + "~" + customers.get(i).getSequence() , i);
+				ukmMap.put(customers.get(i).getTenDigitJidStr() + "~" + customers.get(i).getSequence() , i);
 			}
 		}
 		String key = jid + "~"+ pid;
@@ -539,7 +553,9 @@ public class CreateUkMailResources {
 		ukm.setFirstPieceId(startPID);
 		
 		ukm.setLastPieceId(endPID);
-		ukm.setJid(customer.getJid());
+		// MP
+		ukm.setJid(Integer.toString(customer.getTenDigitJid()));
+		//ukm.setJid(customer.getJid());
 		ukm.setRunDate(runDate);
 		if(processMailmark){
 			ukm.setItemId(getTrayId());
