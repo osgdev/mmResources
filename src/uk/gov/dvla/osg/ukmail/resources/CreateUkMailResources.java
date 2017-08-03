@@ -54,13 +54,15 @@ public class CreateUkMailResources {
 	static boolean processUkMail = false;
 	private static PostageConfiguration postConfig = null;
 	private static ProductionConfiguration prodConfig = null;
+	private static String parentJid = null;
 	
 	public CreateUkMailResources(ArrayList<Customer> customers, 
 			PostageConfiguration postConfig, 
 			ProductionConfiguration prodConfig, 
 			float mailMarkComplianceLevel, 
 			String runNo,
-			String actualProduct) {
+			String actualProduct, 
+			String parentJid) {
 		
 		this.resourcePath=postConfig.getUkmResourcePath();
 		ukmailBatchTypes=postConfig.getUkmBatchTypes();
@@ -75,9 +77,9 @@ public class CreateUkMailResources {
 		CreateUkMailResources.postConfig=postConfig;
 		CreateUkMailResources.runNo=runNo;
 		this.actualProduct=actualProduct;
-		
-		CreateUkMailResources.soapFilePath=postConfig.getUkmSoapDestination() + "SOAP.DAT"; 
-		CreateUkMailResources.soapFileArchivePath=postConfig.getUkmSoapArchive() + "SOAP_ARCH.DAT";
+
+		CreateUkMailResources.soapFilePath=postConfig.getUkmSoapDestination() + parentJid + ".SOAPFILE.DATA"; 
+		CreateUkMailResources.soapFileArchivePath=postConfig.getUkmSoapArchive() + parentJid + ".SOAPFILE.DATA";
 		ukMailManifestArchivePath=postConfig.getUkmManifestArchive();
 		
 
