@@ -6,7 +6,7 @@ public class BarcodeLookup {
 	private String itemNo;
 	
 	public String print(){
-		return String.format("%10s%06d%8s", this.jid, this.pid, this.itemNo);
+		return String.format("%10s%06d%8d", this.jid, this.pid, this.itemNo);
 	}
 	
 	public String getJid() {

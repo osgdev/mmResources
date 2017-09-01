@@ -655,7 +655,6 @@ public class CreateUkMailResources {
 
 	}
 
-
 	public static ArrayList<Customer> getUkMailCustomers(ArrayList<Customer> allCustomers){
 		ArrayList<Customer> ukMailCustomers = new ArrayList<Customer>();
 		for(Customer customer : allCustomers){
