@@ -80,8 +80,8 @@ public class CreateUkMailResources {
 
 		CreateUkMailResources.soapFilePath=postConfig.getUkmSoapDestination() + parentJid + ".SOAPFILE.DATA"; 
 		CreateUkMailResources.soapFileArchivePath=postConfig.getUkmSoapArchive() + parentJid + ".SOAPFILE.DATA";
-		ukMailManifestArchivePath=postConfig.getUkmManifestArchive();
-		
+		//ukMailManifestArchivePath=postConfig.getUkmManifestArchive();
+		ukMailManifestConsignorPath = postConfig.getUkmConsignorFileDestination();
 
 		runDate = new SimpleDateFormat("ddMMyy").format(new Date());
 		manifestTimestamp = new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date());
@@ -124,8 +124,7 @@ public class CreateUkMailResources {
 				processUkMail = true;
 				processMailmark = true;
 			}
-			
-			
+				
 			LOGGER.info("processUkMail={} processMailmark={}",processUkMail, processMailmark);
 			if((!processMailmark) && (!processUkMail)){
 				LOGGER.info("No UKMAIL customers to process");
@@ -165,11 +164,11 @@ public class CreateUkMailResources {
 			System.exit(3);
 		}
 		
-		LOGGER.info("SOAP file, '{}' exists {}",soapFileArchivePath ,fh.checkFileExists(soapFileArchivePath));
+		LOGGER.info("SOAP file, '{}' exists {}", soapFileArchivePath, fh.checkFileExists(soapFileArchivePath));
 		
 		if(ukMailManifestPaths != null){
 			for(String s : ukMailManifestPaths){
-				LOGGER.info("MANIFEST, '{}' exists {}", s , fh.checkFileExists(s));
+				LOGGER.info("MANIFEST, '{}' exists {}", s, fh.checkFileExists(s));
 			}
 		}
 	}
@@ -402,13 +401,14 @@ public class CreateUkMailResources {
 		Customer nextCustomer = null;
 		float currentTraySize = 0;
 		float currentTrayWeight =0;
+		LOGGER.debug("Tray Size from Prod Config: '{}'", prodConfig.getTraySize());
 		
 		for(Integer i = 0; i < ukMailCustomer.size();i++){
 			j = i + 1;
 			Customer customer = ukMailCustomer.get(i);
 			currentTraySize = currentTraySize + customer.getSize();
 			incrementTrayWeight(customer.getWeight());
-			//LOGGER.debug("Tray weight is now {}",getTrayWeight());
+			LOGGER.debug("Tray Size/Weight is now {}/{}", getTrayWeight(), currentTraySize);
 			if(i.equals(ukMailCustomer.size()-1)){
 				//If last customer then create manifest object
 				itemCount ++;
@@ -454,6 +454,7 @@ public class CreateUkMailResources {
 						}else{
 							endPID = customer.getSequence();
 						}
+						LOGGER.debug("End Of Tray {}-{}-{}-{}-{} - Items/Tray Size: '{}/{}'",customer.getTenDigitJidStr(),customer.getLang(),customer.getMsc(),customer.getSize(),customer.getEnvelope(),itemCount,currentTraySize);
 						
 						ukmList.add(getItemManifest(customer,itemCount,startPID, endPID));
 						if(itemCount < minimumTrayVolume){
@@ -471,18 +472,13 @@ public class CreateUkMailResources {
 		
 		ukMailManifestPaths = new HashSet<String>();
 		for(UkMailManifest ukmm : ukmList){
-			
 			String output = ukmm.print(processMailmark);
-			//System.out.println(output); 
 			fh.write(ukMailManifestArchivePath + ukmm.getManifestFilename(), output);
 			fh.write(ukMailManifestConsignorPath + ukmm.getManifestFilename(), output);
-			//fh.write(spoolDir + jobId + "." + ukmm.getManifestFilename() + "A", output);
-			ukMailManifestPaths.add(ukMailManifestArchivePath + ukmm.getManifestFilename());
+			//ukMailManifestPaths.add(ukMailManifestArchivePath + ukmm.getManifestFilename());
 		}
 		
 	}
-
-	
 
 	/**
 	 * @param customer

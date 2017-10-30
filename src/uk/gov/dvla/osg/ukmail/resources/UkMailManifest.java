@@ -98,7 +98,7 @@ private String manifestFilename;
 	}
 
 	public void setMailingId() {
-		this.mailingId = this.appName + this.runNo;
+		this.mailingId = this.appName + "-" + this.runNo;
 	}
 
 	public String getCustomerRef() {
